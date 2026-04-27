@@ -1,0 +1,50 @@
+//----------------------------------------------------------------------------
+// Copyright [2026] [Deepgrid Semi Pvt Ltd]
+//
+// Author: Deepgrid Semi Pvt Ltd
+//------------------------------------------------------------------------------
+
+// Reference kernel functions for LLM
+
+#ifndef _TARGET_KERNELS_REF_LLM_M_H_
+#define _TARGET_KERNELS_REF_LLM_M_H_
+
+#include "stdint.h"
+#include "../../../base/types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern void kernel_ref_llm_matmul_q4_exe(int _req_id,int N,int D,int gs,uint8_t *x_v,float16_t *x_s,
+                                          uint8_t *w_v,float16_t *w_s,float16_t *result);
+extern void kernel_ref_llm_matmul_q8_exe(int _req_id,int N,int D,int gs,uint8_t *x_v,float16_t *x_s,
+                                          uint8_t *w_v,float16_t *w_s,float16_t *result);
+extern void kernel_ref_llm_quantize_exe(int reqId,int N,float16_t *x,float16_t *s,uint8_t *q);
+
+extern void kernel_ref_llm_rms_exe(int reqId,int N,float16_t *x,float16_t *o,float *w);
+
+extern void kernel_ref_llm_dot_product_exe(int reqId,int N,int K,float16_t *x1,float16_t *_x2,int _x2_dim,float16_t *_y,float scale);
+
+extern void kernel_ref_llm_dot_product2_exe(int reqId,int N,int _K,float16_t *x1,float16_t *x2,int x2_dim,float16_t *_y);
+
+extern void kernel_ref_llm_rope_exe(int reqId,int N,float *fcr,float *fci,float16_t *v,float16_t *y);
+
+extern void kernel_ref_llm_cosine_exe(int reqId,int N,float *x,float scale,float *y);
+
+extern void kernel_ref_llm_sine_exe(int reqId,int N,float *x,float scale,float *y);
+
+extern void kernel_ref_llm_residual_exe(int reqId,int N,float16_t *x,float16_t *y,float16_t *xb);
+
+extern void kernel_ref_llm_SwiGLU_exe(int reqId,float16_t *hb,float16_t *hb2,int N);
+
+extern void kernel_ref_llm_softmax_exe(int reqId,float16_t *x,int N);
+
+extern void kernel_ref_llm_scale_exe(int reqId,int N,float16_t *x,float scale);
+
+extern int kernel_ref_llm_find_max(float16_t *x,uint32_t N);
+
+#ifdef __cplusplus
+}
+#endif
+#endif

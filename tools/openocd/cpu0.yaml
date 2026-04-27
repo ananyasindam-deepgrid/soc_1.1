@@ -1,0 +1,5 @@
+debug: !!dgsriscv.DebugReport {hardwareBreakpointCount: 0}
+iBus: !!dgsriscv.BusReport
+  flushInstructions: [4111, 19, 19, 19]
+  info: !!dgsriscv.CacheReport {bytePerLine: 32, size: 4096}
+  kind: cached

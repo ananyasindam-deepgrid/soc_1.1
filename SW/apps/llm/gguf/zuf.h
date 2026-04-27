@@ -1,0 +1,92 @@
+//----------------------------------------------------------------------------
+// Copyright [2026] [Deepgrid Semi Pvt Ltd]
+//
+// Author: Deepgrid Semi Pvt Ltd
+//------------------------------------------------------------------------------
+
+// This class implements ZUF file format
+
+#ifndef __ZUF_H_
+#define __ZUF_H_
+
+#include <assert.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <fcntl.h>
+#include <string>
+#include <stdint.h>
+#include <stdbool.h>
+#include <sys/types.h>
+#include <vector>
+#include <string>
+#include "../../../base/types.h"
+
+#define ZUF_VERSION 0 // Current supported version
+
+enum ZUF_TYPE {
+    ZUF_TYPE_EOF = 0,
+    ZUF_TYPE_UINT32 = 1,
+    ZUF_TYPE_FLOAT = 2,
+    ZUF_TYPE_BFLOAT = 3,
+    ZUF_TYPE_STRING = 4,
+    ZUF_TYPE_UINT8 = 5,
+    ZUF_TYPE_GAP = 64
+};
+
+typedef enum {
+    ZUF_QUANT_INT4=0,
+    ZUF_QUANT_INT8=1
+} ZUF_QUANT;
+
+typedef struct {
+    enum ZUF_TYPE type;
+    uint32_t sz;
+    char* key;
+    uint32_t lstSize;
+    void* data;
+    uint32_t dataLen;
+} ZUF_CONFIG_ELE;
+
+class ZUF
+{
+public:
+    ZUF();
+    ~ZUF();
+    DgridStatus Create(const char* fname);
+    DgridStatus CreateComplete();
+    DgridStatus Open(const char* fname);
+    void Close();
+    void WriteItemU32(const char* key, uint32_t v);
+    void WriteItemFloat(const char* key, float v);
+    void WriteItemBfloat(const char* key, float16_t v);
+    void WriteItemString(const char* key, char* str);
+    void WriteItemArrayU32(const char* key, uint32_t arrSize, uint32_t * arr);
+    void WriteItemArrayFloat(const char* key, uint32_t arrSize, float* arr);
+    void WriteItemArrayBFLOAT(const char* key, uint32_t arrSize, float16_t * arr);
+    void WriteItemArrayString(const char* key, uint32_t arrSize, char* arr);
+    void WriteItemArrayU8(const char* key, uint32_t arrSize, uint8_t* arr);
+
+    bool ReadItemU32(const char* key, uint32_t& v);
+    bool ReadItemFloat(const char* key, float& v);
+    bool ReadItemBFLOAT(const char* key, float16_t & v);
+    bool ReadItemString(const char* key, char** str);
+    bool ReadArrayU8(const char* key, uint32_t & arraySize, uint8_t** array);
+    bool ReadArrayFloat(const char* key, uint32_t & arraySize, float** array);
+    bool ReadArrayBfloat(const char* key, uint32_t & arraySize, float16_t** array);
+    bool ReadArrayString(const char* key, uint32_t & arraySize, char** array);
+private:
+    inline void write(void* buf, size_t bufLen) {
+        fwrite(buf, 1, bufLen, m_fp);
+        m_wpos += bufLen;
+    }
+    bool findKey(const char* key, ZUF_CONFIG_ELE& ele);
+    void writeConfig(ZUF_TYPE type, const char* key, uint32_t numItems, void* items);
+private:
+    FILE* m_fp;
+    uint8_t* m_buf;
+    uint8_t* m_top;
+    size_t m_wpos;
+};
+
+#endif
